@@ -6,3 +6,4 @@ lib/*
 ### Ignore following files
 .DS_Store
 pyvenv.cfg
+credentials.json
