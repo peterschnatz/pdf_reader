@@ -209,9 +209,9 @@ class PDFNumberFinder(object):
             s = statement.lower()
 
             # remove commas from numbers
-            match = re.findall(r"(\,\d{3})", s)
+            match = re.findall(r"(,\d{3})", s)
             for m in match:
-                replacement = re.sub(r"\,", "", m)
+                replacement = re.sub(r",", "", m)
                 s = s.replace(m, replacement)
 
             # separate non number characters from numbers by space
