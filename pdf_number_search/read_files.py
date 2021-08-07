@@ -12,7 +12,8 @@ import sys, getopt
 
 import pdf_number_search.utils as utils
 
-class pdfNumberFinder():
+
+class PDFNumberFinder(object):
 
     @staticmethod
     def pdf_to_str(fname: str,
@@ -27,7 +28,7 @@ class pdfNumberFinder():
         pages: list
             List of page page numbers in PDF file to convert
 
-        Output
+        Return
         ======
         text: str
             PDF text converted to a string.
@@ -120,7 +121,7 @@ class pdfNumberFinder():
 
     @staticmethod
     def text2int(textnum,
-                 numwords={}):
+                 numwords=None):
         """Convert alpha number to numerals.
 
         The function takes a number spelled out in english and converts it
@@ -227,13 +228,13 @@ class pdfNumberFinder():
                 used_num_words = list()
                 for idx, word in enumerate(word_split):
 
-                    ### If numbers have commas, remove them
+                    # If numbers have commas, remove them
                     if re.search(r'\d', word):
                         num_no_commas = float(word.replace(",", ""))
                         word_as_list = [word]
                         j = 1
 
-                        ### check if there are number words after the number
+                        # check if there are number words after the number
                         if idx + j < len(word_split):
                             while word_split[idx + j] in utils.number_words:
                                 try:
@@ -241,41 +242,42 @@ class pdfNumberFinder():
                                     word_as_list.append(word_split[idx + j])
                                     used_num_words.append(word_split[idx + j])
                                     j += 1
-                                except:
-                                    print("Problem sentence")
-                                    print(s)
+                                except Exception as e:
+                                    print(e)
+                                    print("Problem sentence:")
+                                    print(f"    {s}")
                                     j += 1
 
-                                ### break out of while loop if at end of sentence
+                                # break out of while loop if at end of sentence
                                 if (idx + j) == len(word_split):
                                     break
 
-                        ### sub in float for number words
+                        # sub in float for number words
                         word_split[idx: idx + j] = [str(num_no_commas)]
-                        ### rebuild sentence
+                        # rebuild sentence
                         s = " ".join(word_split)
 
-                    ### Get indices of number words not already translated
+                    # Get indices of number words not already translated
                     if word in used_num_words:
                         used_num_words.remove(word)
                     elif word in utils.number_words:
                         word_i.append(idx)
 
-                ### Check if there are any number words left to translate
+                # Check if there are any number words left to translate
                 if len(word_i) > 0:
                     all_word_nums_i = list()
-                    ### there is a non number word in between number words
+                    # there is a non number word in between number words
                     if (word_i[-1] - word_i[0]) != (len(word_i) - 1):
 
-                        ### Split indices into lists of consecutive indices
+                        # Split indices into lists of consecutive indices
                         consec_indices = list()
                         for k, g in groupby(enumerate(word_i), lambda i_x: i_x[0] - i_x[1]):
                             consec_indices.append(list(map(itemgetter(1), g)))
 
-                        ### combine lists of indices if they only skip one number
-                        ### and the word corresponding to the missing index is "and"
+                        # combine lists of indices if they only skip one number
+                        # and the word corresponding to the missing index is "and"
                         for i, l in enumerate(consec_indices[:-1]):
-                            if (l[0] in [el for consec in all_word_nums_i for el in consec]):
+                            if l[0] in [el for consec in all_word_nums_i for el in consec]:
                                 continue
                             elif (consec_indices[i + 1][0] - l[-1] == 2) & (word_split[l[-1] + 1] == "and"):
                                 all_word_nums_i.append(l + [l[-1] + 1] + consec_indices[i + 1])
@@ -286,10 +288,10 @@ class pdfNumberFinder():
                             all_word_nums_i.append(consec_indices[-1])
 
                     else:
-                        ### There is only one number with no non-number words within
+                        # There is only one number with no non-number words within
                         all_word_nums_i = [word_i]
 
-                    ### take each word list and translate it to an integer
+                    # take each word list and translate it to an integer
                     for word_i in all_word_nums_i:
                         full_number = " ".join([word_split[i] for i in word_i])
                         numeric_sub = self.text2int(full_number)
