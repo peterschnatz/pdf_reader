@@ -359,7 +359,14 @@ class PDFNumberFinder(object):
         return translated_str
 
     def run_number_sentence_translator(self):
+        """Run number sentence translator for pdf_directory or pdf_files.
 
+        Return
+        ======
+        translated_sent: dict
+            Dictionary with key = PDF file name and value = list of sentences
+            containing numbers converted entirely to numerals.
+        """
         translated_sent = dict()
         if self.pdf_directory:
             text = self.convert_multiple(self.pdf_directory)

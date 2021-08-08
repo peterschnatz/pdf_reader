@@ -3,6 +3,7 @@
 bin/*
 lib/*
 pdf_files/*
+.idea/*
 
 ### Ignore following files
 .DS_Store
