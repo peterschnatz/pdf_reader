@@ -14,6 +14,45 @@ import pdf_number_search.utils as utils
 
 
 class PDFNumberFinder(object):
+    def __init__(self,
+                 pdf_directory: str = None,
+                 pdf_file: str = None,
+                 pages: list = None
+                 ):
+
+        assert not (pdf_directory and pdf_file), (
+            "Expecting pdf_directory or pdf_file to be defined, not both."
+        )
+
+        if pdf_directory:
+            assert isinstance(pdf_directory, str), (
+                "Expecting pdf_directory to be of type string."
+            )
+            if pdf_directory[-1] != "/":
+                self.pdf_directory = pdf_directory + "/"
+            else:
+                self.pdf_directory = pdf_directory
+        else:
+            self.pdf_directory = pdf_directory
+
+        if pdf_file:
+            assert isinstance(pdf_file, str), (
+                "Expecting pdf_file to be of type string."
+            )
+            self.pdf_file = pdf_file
+        else:
+            self.pdf_file = pdf_file
+
+        if pages:
+            assert self.pdf_file, (
+                "pdf_file must be defined in order to set pages variable."
+            )
+            assert isinstance(pages, list) and all(isinstance(x, int) for x in pages), (
+                "Expecting pages to be list of integers."
+            )
+            self.pages = pages
+        else:
+            self.pages = pages
 
     @staticmethod
     def pdf_to_str(fname: str,
@@ -142,6 +181,7 @@ class PDFNumberFinder(object):
         """
         if not numwords:
             # Set numwords dictionary
+            numwords = dict()
             numwords["and"] = (1, 0)
             for idx, word in enumerate(utils.units):
                 numwords[word] = (1, idx)
@@ -200,7 +240,7 @@ class PDFNumberFinder(object):
             List of sentences with all numbers converted to numerals.
         """
         # Check input
-        assert isinstance(split_text, list) and all(isinstance(x, int) for x in split_text), (
+        assert isinstance(split_text, list) and all(isinstance(x, str) for x in split_text), (
             "Expecting split_text to be list of strings."
         )
 
@@ -305,3 +345,23 @@ class PDFNumberFinder(object):
 
                 translated_str.append(s)
         return translated_str
+
+    def run_number_sentence_translator(self):
+
+        translated_sent = dict()
+        if self.pdf_directory:
+            text = self.convert_multiple(self.pdf_directory)
+
+            for k in text.keys():
+                print(f"Translating . . .\n    {k}")
+                split_text = self.split_sentences(text[k])
+                translated_sent[k] = self.translate_number_sentences(split_text)
+
+        elif self.pdf_file:
+            text = self.convert_single(self.pdf_file, self.pages)
+            print(f"Translating . . .\n    {self.pdf_file}")
+            split_text = self.split_sentences(text)
+            fname = self.pdf_file.split("/")[-1]
+            translated_sent[fname] = self.translate_number_sentences(split_text)
+
+        return translated_sent
