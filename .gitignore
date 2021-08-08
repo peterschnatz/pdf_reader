@@ -2,8 +2,13 @@
 .ipynb_checkpoints/*
 bin/*
 lib/*
+pdf_files/*
 
 ### Ignore following files
 .DS_Store
 pyvenv.cfg
 credentials.json
+token.pickle
+quickstart.py
+pdf_reading_test.ipynb
+*.pyc

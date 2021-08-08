@@ -8,7 +8,6 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 import os
-import sys, getopt
 
 import pdf_number_search.utils as utils
 
@@ -19,7 +18,20 @@ class PDFNumberFinder(object):
                  pdf_file: str = None,
                  pages: list = None
                  ):
+        """
+        This class contains all the methods and functions required for converting PDF text
+        files into python strings, selecting sentences that contain numbers, and translating English
+        numbers to numerals.
 
+        Parameters
+        ==========
+        pdf_directory: str, default=None
+            Directory containing PDF files to convert.
+        pdf_file: str, default=None
+            Full path to PDF file to convert.
+        pages: list, default=None
+            List of page page numbers in PDF file to convert
+        """
         assert not (pdf_directory and pdf_file), (
             "Expecting pdf_directory or pdf_file to be defined, not both."
         )
